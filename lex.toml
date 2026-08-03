@@ -1,7 +1,7 @@
 [package]
 name        = "lex-pack-construction"
 version     = "0.1.0"
-description = "Construction domain pack — milestone payments gated on hash-chained evidence + an x402/lex-guard budget cap."
+description = "Construction domain pack — milestone payments doubly gated on hash-chained evidence and an x402/lex-guard budget cap, with AI-Act-style human oversight above a review threshold."
 
 [dependencies]
 lex-soft   = { git = "https://github.com/alpibrusl/lex-soft" }
@@ -9,4 +9,4 @@ lex-trail  = { git = "https://github.com/alpibrusl/lex-trail" }
 lex-guard  = { git = "https://github.com/alpibrusl/lex-guard" }
 lex-web    = { git = "https://github.com/alpibrusl/lex-web" }
 lex-schema = { git = "https://github.com/alpibrusl/lex-schema" }
-lex-log    = { git = "https://github.com/alpibrusl/lex-log" }
+lex-money  = { git = "https://github.com/alpibrusl/lex-money" }
