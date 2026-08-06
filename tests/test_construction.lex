@@ -5,6 +5,11 @@
 # what's on the chain); the effectful routes (contracts, evidence, release,
 # gate.spend) need a live DB + budget token to exercise meaningfully — that's
 # covered by lex-ev-fleet's own integration testing of the mounted deployment.
+#
+# lex test discards run_all's return value and only checks whether the call
+# raises a runtime error -- see lex-ag-ui's README for the full writeup. This
+# file forces a real runtime error when count_failures(...) > 0 so lex
+# test/lex ci are real gates here.
 
 import "std.list" as list
 
@@ -63,7 +68,26 @@ fn test_manifest_settles() -> Result[Unit, Str] {
   assert_true(construction.manifest().settles, "a milestone release moves money, so the manifest must declare settles: true")
 }
 
-fn run_all() -> List[Result[Unit, Str]] {
+fn suite_pure() -> List[Result[Unit, Str]] {
   [test_eur_to_cents_basic(), test_eur_to_cents_unparseable_is_zero(), test_split_kinds_drops_blank_entries(), test_missing_kinds_none_missing(), test_missing_kinds_reports_what_is_missing(), test_manifest_is_valid(), test_manifest_route_prefix(), test_manifest_settles()]
+}
+
+fn count_failures(results :: List[Result[Unit, Str]]) -> Int {
+  list.fold(results, 0, fn (acc :: Int, r :: Result[Unit, Str]) -> Int {
+    match r {
+      Ok(_) => acc,
+      Err(_) => acc + 1,
+    }
+  })
+}
+
+fn run_all() -> Int {
+  let failures := count_failures(suite_pure())
+  let _crash_if_failed := if failures > 0 {
+    1 / 0
+  } else {
+    0
+  }
+  failures
 }
 
