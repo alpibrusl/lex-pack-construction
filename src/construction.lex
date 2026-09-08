@@ -278,7 +278,7 @@ fn missing_kinds(required :: List[Str], have :: List[(Str, Str)]) -> List[Str] {
 # even though the payment itself can't be rolled back automatically.
 fn mount(r :: router.Router, db :: Db) -> [sql] router.Router {
   let __t := ensure_tables(db)
-  let with_contracts := router.route_effectful(r, "POST", "/construction/contracts", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc] resp.Response {
+  let with_contracts := router.route_effectful(r, "POST", "/construction/contracts", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc, approval] resp.Response {
     match jv.parse(c.body) {
       Err(_) => resp.bad_request("{\"error\":\"invalid json\"}"),
       Ok(j) => {
@@ -338,7 +338,7 @@ fn mount(r :: router.Router, db :: Db) -> [sql] router.Router {
       },
     }
   })
-  let with_evidence := router.route_effectful(with_contracts, "POST", "/construction/evidence", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc] resp.Response {
+  let with_evidence := router.route_effectful(with_contracts, "POST", "/construction/evidence", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc, approval] resp.Response {
     match jv.parse(c.body) {
       Err(_) => resp.bad_request("{\"error\":\"invalid json\"}"),
       Ok(j) => {
@@ -363,7 +363,7 @@ fn mount(r :: router.Router, db :: Db) -> [sql] router.Router {
       },
     }
   })
-  let with_release := router.route_effectful(with_evidence, "POST", "/construction/milestones/release", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc] resp.Response {
+  let with_release := router.route_effectful(with_evidence, "POST", "/construction/milestones/release", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc, approval] resp.Response {
     match jv.parse(c.body) {
       Err(_) => resp.bad_request("{\"error\":\"invalid json\"}"),
       Ok(j) => {
@@ -463,7 +463,7 @@ fn mount(r :: router.Router, db :: Db) -> [sql] router.Router {
       },
     }
   })
-  router.route_effectful(with_release, "GET", "/construction/contracts/:ref/statement", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc] resp.Response {
+  router.route_effectful(with_release, "GET", "/construction/contracts/:ref/statement", fn (c :: ctx.Ctx) -> [io, time, crypto, random, sql, fs_read, fs_write, net, concurrent, llm, proc, approval] resp.Response {
     let ref := match ctx.path_param(c, "ref") {
       Some(s) => s,
       None => "",
